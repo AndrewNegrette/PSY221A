@@ -1,0 +1,271 @@
+---
+title: 'PSY221A: Data Validation and Wrangling'
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+```{r setup, include=FALSE}
+
+```
+
+H1: Women will score higher on intensity of love compared to men.
+
+H2: Overall romantic love will positively correlate with relationship duration.
+
+## 1. Load the package and data
+
+```{r load, message=FALSE}
+#load the codebook package
+library(codebook)
+
+#load data/raw/data_doctored.csv
+raw <- read.csv("PSY221A_Negrette/Data/Raw/data_doctored.csv")
+dim(raw)
+head(raw)
+
+
+#check row and column counts, and inspect the first few rows
+
+
+
+
+
+
+data <- raw[, c("ResponseId","Sex","Love_how_much_1","Relationship_length",
+                "Love_1","Love_2","Love_3","Love_4","Love_5","Love_6","Love_7","Love_8","Love_9","Love_10","Love_11","Love_12","Love_13","Love_14","Love_15")]
+
+
+
+
+
+
+```
+
+
+## 2. Check participant IDs
+
+```{r participant_ids}
+
+#count na
+sum(is.na(data$ResponseId))
+#count blank
+sum(data$ResponseId=="",na.rm = T)
+#count duplicates
+sum(duplicated(data$ResponseId))
+#inspect records with missing or blank IDs
+missingID <- which(is.na(data$ResponseId))
+data[missingID,]
+
+#remove the known empty record with no ID, then check the row count
+data <- data[!is.na(data$ResponseId),]
+
+```
+
+
+## 3. Recode gender
+
+```{r sex_at_birth}
+
+table(data$Sex,useNA="ifany")
+#0=Men; 1=Women; 2=Non-binary; 3=Prefer not to say.
+
+data$Sex <- factor(data$Sex,
+                   levels = c(0,1,2,3),
+                   labels = c("Men","Women","Non-binary","Prefer not to say"))
+
+
+
+```
+
+
+## 4. Validate Love Intensity
+
+```{r preference_vars}
+
+table(data$Love_how_much_1,useNA ="ifany")
+
+# Confirm scores are within the intended 0–100 range
+sum(h1Data$Love_how_much_1 < 0, na.rm = TRUE)
+sum(h1Data$Love_how_much_1 > 100, na.rm = TRUE)
+
+
+
+
+
+
+#make h1Data with ID, Sex, and love intensity
+
+
+h1Data <- data[, c("ResponseId", "Sex", "Love_how_much_1")]
+
+h1Data <- h1Data[
+  !is.na(h1Data$Sex) &
+  !is.na(h1Data$Love_how_much_1),
+]
+
+str(h1Data)
+summary(h1Data)
+```
+
+
+## 5. Overall romantic love
+```{r Overall romantic love}
+#group all fifteen love variables
+
+all_love <- c("Love_1","Love_2","Love_3","Love_4","Love_5","Love_6","Love_7","Love_8","Love_9","Love_10","Love_11","Love_12","Love_13","Love_14","Love_15")
+love_items <- data[, all_love]
+str(love_items)
+summary(love_items)
+
+lapply(love_items, function(x) table(x, useNA = "ifany"))
+#range 
+sapply(love_items, function(x)
+  sum(x < 1 | x > 5, na.rm = TRUE)
+)
+
+colSums(is.na(love_items))
+
+
+#calculate total score; leave the total NA if any item is missing
+
+data$all_love_score <- ifelse(
+  answered_items >= 12,
+  rowSums(data[, all_love], na.rm = TRUE),
+  NA
+)
+
+
+#pplthat did not complete atleast 12 of 15
+answered_items <- rowSums(!is.na(data[, all_love]))
+
+data$all_love_score <- ifelse(
+  answered_items >= 12,
+  rowSums(data[, all_love], na.rm = TRUE),
+  NA
+)
+#check the score
+summary(data$all_love_score)
+
+
+```
+
+## 6. Calculate relationship duration
+
+```{r relationship duration}
+table(data$Relationship_length,useNA ="ifany")
+
+# Confirm scores are within the intended 0–100 range
+sum(data$Relationship_length < 1, na.rm = TRUE)
+sum(data$Relationship_length > 80, na.rm = TRUE)
+
+
+
+
+#check the score
+summary(data$Relationship_length)
+
+
+#make h2Data with ID, relationship duration, and love intensity
+#do not apply the H1 preference filter to this hypothesis
+
+
+
+h2Data <- data[, c("ResponseId", "Relationship_length", "all_love_score")]
+
+
+
+h2Data <- h2Data[
+  !is.na(h2Data$Relationship_length) &
+  !is.na(h2Data$all_love_score),
+]
+summary(h2Data)
+
+```
+
+## 7. Check the final tables
+
+```{r final_tables}
+#check rows, columns, types, and missing values in h1Data
+#one row per participant, one column per variable
+dim(h1Data)
+str(h1Data)
+head(h1Data)
+colSums(is.na(h1Data))
+table(h1Data$Sex,useNA="ifany")
+range(h1Data$Love_how_much_1)
+sum(duplicated(h1Data$ResponseId))
+
+#repeat the checks for h2Data; both scores should be within 1-7
+dim(h2Data)
+str(h2Data)
+head(h2Data)
+colSums(is.na(h2Data))
+range(h2Data$all_love_score)
+range(h2Data$Relationship_length)
+sum(duplicated(h2Data$ResponseId))
+```
+
+## 8. Add labels and generate codebooks
+
+The descriptions come from the original codebook and our scoring decisions.
+`compact_codebook()` adds summaries from the actual data. Knit the Rmd to
+display the formatted codebooks.
+
+```{r variable_labels}
+#add a description to each h1Data column, in column order
+#include the source codes, meaning, and units
+var_label(h1Data) <- c(
+  "Unique participant ID (ResponseId)",
+  "Reported Gender: original codes #0=Men; 1=Women; 2=Non-binary; 3=Prefer not to say; now stored as a factor",
+  "Single item continous variable measuring love intesnity ; 0-100 points from ; zero is valid"
+)
+
+#add a description to each h2Data column, in column order
+#include response anchors and the commitment scoring rule
+var_label(h2Data) <- c(
+  "Unique participant ID (ResponseId)",
+  "Relationship length: Asks how long they've been in current relationship",
+  "Romantic love: total score of a 15-item scale measruing overall romantic love 1–5: Not at all to Extremely; no reverse coding; at least one valid response required, max score 75"
+)
+
+```
+
+H1 includes participants with an ID, a valid gender category, and a continious variable between 0 and 100. Factor level numbers in the
+generated table are internal R positions, not the original survey codes.
+
+```{r h1_codebook}
+#generate the h1Data codebook
+compact_codebook(h1Data)
+
+```
+
+H2 includes participants with an ID, relationship duration  and
+valid overall romantic love.
+
+```{r h2_codebook}
+#generate the h2Data codebook
+compact_codebook(h2Data)
+
+```
+
+## 9. Save the final tables
+
+```{r save}
+#create data/processed_data if needed
+dir.create("PSY221A_Negrette/data/processed_data",recursive=T,showWarnings=F)
+
+#save h1Data and h2Data without an extra row-number column
+write.csv(h1Data,"PSY221A_Negrette/data/processed_data/h1.csv",row.names=F)
+write.csv(h2Data,"PSY221A_Negrette/data/processed_data/h2.csv",row.names=F)
+
+#read the files back and confirm their dimensions
+h1Saved <- read.csv("PSY221A_Negrette/data/processed_data/h1.csv")
+h2Saved <- read.csv("PSY221A_Negrette/data/processed_data/h2.csv")
+dim(h1Saved)
+dim(h2Saved)
+
+```
