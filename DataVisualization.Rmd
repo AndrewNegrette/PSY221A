@@ -1,0 +1,156 @@
+
+
+## Hypothesis
+
+H1: Women will score higher on intensity of love compared to men.
+
+H2: Overall romantic love will positively correlate with relationship duration.
+
+```{r load package}
+library(ggplot2)
+library(ggrain)
+
+```
+
+## Load the processed data
+
+```{r loadData}
+#load processed data
+
+getwd(
+)
+h1Data<- read.csv("/Users/anegrette/Downloads/PSY221A_Negrette/Data/processed_data/h1.csv")
+h2Data<- read.csv("/Users/anegrette/Downloads/PSY221A_Negrette/Data/processed_data/h2.csv")
+#reorganize categorical variable
+h1Data$Sex <- factor(h1Data$Sex,
+                           levels=c("Men","Women","Prefer not to say"))
+
+```
+
+## H1 - Box Plot
+
+```{r H1Box}
+#Box plot
+#The line is the median; the box covers the middle 50% of responses (Q1-Q3).
+#Whiskers reach the most extreme observations within 1.5 IQR of the box edges.
+
+h1Data <- na.omit(h1Data)
+h1Box <- ggplot(data=h1Data,
+                aes(x=Sex,
+                    y=Love_how_much_1,
+                    fill=Sex)) +
+  geom_boxplot()+
+  labs(x="Gender",
+       y="Love Intesnity",
+       fill="Gender",
+       title="Love Intesnity by Gender")+
+  theme_gray(base_size=15)
+
+h1Box
+
+
+
+
+
+
+```
+
+## H1 - Violin Plot (with Box Plot)
+
+```{r H1Violin}
+#Violin Plot
+#Wider sections show where responses are more concentrated within each group.
+#The shape depends on smoothing; integer scores can create bumps.
+
+h1Viol <- ggplot(data=h1Data,
+                 aes(x=Sex,
+                    y=Love_how_much_1,
+                    fill=Sex))+
+  geom_violin()+
+  geom_boxplot(width=.20)+
+labs(x="Gender",
+       y="Love Intesnity",
+       fill="Gender",
+       title="Love Intensity by Gender")+
+  theme_gray(base_size=15)
+
+h1Viol
+
+
+```
+
+## H1 - Raincloud Plot
+
+```{r H1Raincloud}
+#Raincloud Plot
+#A raincloud combines a half-violin, a box plot, and individual responses.
+h1Rain <- ggplot(data=h1Data,
+                 aes(x=Sex,
+                    y=Love_how_much_1,
+                    fill=Sex))+
+  geom_rain(alpha = .5)+
+  labs(x="Gender",
+       y="Love Intesnity",
+       fill="Gender",
+       title="Love Intesnity by Gender")+
+  theme_gray(base_size=12)
+
+h1Rain
+  
+```
+
+## H2 - Scatter Plots
+
+```{r H2Scatter}
+
+h2Data <- na.omit(h2Data)
+#Scatter Plot
+h2Points <- ggplot(data=h2Data,
+                    aes(x=Relationship_length,
+                        y=all_love_score))+
+  geom_point()+
+  labs(x="Relationship Length",
+       y="Overall Romantic Love",
+       title="Overall Romantic Love and Relationship Length")+
+  theme_gray(base_size = 18)
+
+h2Points
+
+#Jitter
+h2Jitter <- ggplot(
+  data=h2Data,
+                    aes(x=Relationship_length,
+                        y=all_love_score))+
+    geom_jitter(width = .12,height=.04,alpha=.04,size = .6)+
+    labs(x="Relationship Length",
+       y="Overall Romantic Love",
+       title="Overall Romantic Love and Relationship Length")+
+  theme_gray(base_size = 18)
+
+
+h2Jitter
+
+
+
+
+```
+
+## H2 - Smooth Line
+
+```{r}
+#Scatter Plot with line
+h2Line <- h2Jitter + geom_smooth(method="lm")
+
+h2Line
+
+```
+
+## Save figures
+
+```{r saveFigures}
+#Run after creating the plots. Save PNG files in the project's figures folder.
+dir.create("figures",showWarnings=FALSE)
+ggsave("figures/h1_h1Box.png",plot=h1Box,width=10,height=6,dpi=300)
+ggsave("figures/h2_scatter.png",plot=h2Line,width=10,height=6,dpi=300)
+```
+
