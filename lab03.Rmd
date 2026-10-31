@@ -23,6 +23,19 @@ H2: Overall romantic love will positively correlate with relationship duration.
 library(codebook)
 
 #load data/raw/data_doctored.csv
+
+###JK: Use paths relative to the project folder so the script runs from your .Rproj. ###
+# In the submitted repository, the input file is in Data/Raw directly under the project folder; there is no nested PSY221A_Negrette folder.
+# Replace the input line below with:
+# raw <- read.csv("Data/Raw/data_doctored.csv")
+# At the end, replace the output-folder and save/read lines with:
+# dir.create("Data/processed_data", recursive = TRUE, showWarnings = FALSE)
+# write.csv(h1Data, "Data/processed_data/h1.csv", row.names = FALSE)
+# write.csv(h2Data, "Data/processed_data/h2.csv", row.names = FALSE)
+# h1Saved <- read.csv("Data/processed_data/h1.csv")
+# h2Saved <- read.csv("Data/processed_data/h2.csv")
+###  End of comment ###
+
 raw <- read.csv("PSY221A_Negrette/Data/Raw/data_doctored.csv")
 dim(raw)
 head(raw)
@@ -88,6 +101,13 @@ data$Sex <- factor(data$Sex,
 
 table(data$Love_how_much_1,useNA ="ifany")
 
+###JK: h1Data has not been created yet at this point. ###
+# The below checks stop with "object 'h1Data' not found" in a fresh R session, even if an old object in your Environment made them work before.
+# Check data here instead, or move these checks after creating h1Data:
+# sum(data$Love_how_much_1 < 0, na.rm = TRUE)
+# sum(data$Love_how_much_1 > 100, na.rm = TRUE)
+###  End of comment ###
+
 # Confirm scores are within the intended 0–100 range
 sum(h1Data$Love_how_much_1 < 0, na.rm = TRUE)
 sum(h1Data$Love_how_much_1 > 100, na.rm = TRUE)
@@ -129,6 +149,22 @@ sapply(love_items, function(x)
 
 colSums(is.na(love_items))
 
+
+###JK: Define answered_items before using it, and calculate all_love_score only once. ###
+# The first ifelse() below uses answered_items before the line that creates it, so it fails in a fresh R session.
+# There is also a scoring issue: summing available responses makes the total depend on how many items someone answered.
+# For example, someone answering 4 on 12 items gets 48, while someone answering 4 on all 15 gets 60, despite the same average response.
+# A simple solution is to retain your at-least-12-items rule and calculate a mean instead of a partial sum.
+# Replace both ifelse() blocks and the answered_items line below with:
+# answered_items <- rowSums(!is.na(data[, all_love]))
+# data$all_love_score <- ifelse(
+#   answered_items >= 12,
+#   rowMeans(data[, all_love], na.rm = TRUE),
+#   NA
+# )
+# This gives a 1-5 mean score; update the label and expected range accordingly.
+# If you prefer a total score instead, require all 15 items and use rowSums(data[, all_love], na.rm=FALSE), giving a possible range of 15-75.
+###  End of comment ###
 
 #calculate total score; leave the total NA if any item is missing
 
@@ -226,6 +262,11 @@ var_label(h1Data) <- c(
 
 #add a description to each h2Data column, in column order
 #include response anchors and the commitment scoring rule
+
+###JK: Please make the H2 codebook match your scoring rule and describe the duration units. ###
+# Your existing label says at least one love response is enough, but your code requires at least 12.
+###  End of comment ###
+
 var_label(h2Data) <- c(
   "Unique participant ID (ResponseId)",
   "Relationship length: Asks how long they've been in current relationship",
