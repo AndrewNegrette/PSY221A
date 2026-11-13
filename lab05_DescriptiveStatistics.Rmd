@@ -42,6 +42,11 @@ hist(h1Data$Love_how_much_1,
 
 ```{r individual_statistics}
 # Mean: add the scores and divide by the number of observed responses.
+###JK: Add a numerical summary of H1 love intensity. ###
+# Your H2 summary already covers relationship duration and overall love. H1 love intensity currently has a histogram but no numerical summary.
+# psych::describe(h1Data["Love_how_much_1"])
+###  End of comment ###
+
 mean(h2Data$all_love_score, na.rm=T)
 # Median: the middle score after sorting the responses.
 median(h2Data$all_love_score, na.rm=T)
