@@ -1,0 +1,110 @@
+---
+title: "Love Intesinity by Gender and Relationships Impact on Overall Love"
+author: "Andrew Negrette"
+format:
+  html:
+    embed-resources: true
+    toc: true
+    code-fold: true
+execute:
+  echo: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+#| label: load-data
+#| include: false
+library(ggplot2)
+library(ggrain)
+
+h1Data <- read.csv("data/processed_data/h1.csv")
+
+h1Data$Sex <- factor(h1Data$Sex,
+                           levels=c("Men","Women","Prefer not to say"))
+h2Data <- read.csv("data/processed_data/h2.csv")
+```
+
+## Hypothesis 1
+
+Women will score higher on intensity of love compared to men.
+
+### Variables and descriptive statistics
+
+- **Gender (`Sex`):** A categorical variable with three groups: Men, Women, and Prefer not to say
+- **Intesnity of Love (`Love_how_much_1`):** Points allocated to intesnity of love from a total budget of 100 points. Higher values indicate greater love intensity.
+
+```{r}
+#| label: h1-descriptives
+# Count respondents in each group.
+table(h1Data$Sex)
+
+# Summarize love intesity points separately for each group.
+by(h1Data$Love_how_much_1, h1Data$Sex, summary)
+```
+
+### Graph
+
+@fig-attractiveness shows the distribution of points by sex at birth. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
+
+```{r}
+#| label: fig-attractiveness
+#| fig-cap: "Love Intesitiy, by Gender."
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(h1Data, aes(x = Sex, y = Love_how_much_1,
+                   fill = Sex)) +
+  geom_rain(alpha = 0.5, point.args = list(alpha = 0.04, size = 0.6, na.rm = T)) +
+  labs(x = "Gender", y = "Love Intesnity") +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+## H2. Confidence in finding a new partner and commitment
+
+Overall romantic love will positively correlate with relationship duration.
+
+### Variables and descriptive statistics
+
+- **Relationship Length (`Relationship_length`):** A single item asking how long their current relatioship is in years.
+- **Overall Romantic Love (`all_love_score`):** The mean of available responses to `Love_1–15`. Each item ranges from 1 (Not at all) to 5 (Extremely); higher scores indicate greater overall love
+
+
+
+```{r}
+#| label: h2-descriptives
+summary(h2Data[, c("Relationship_length", "all_love_score")])
+
+```
+
+### Graph
+
+@fig-commitment shows the relationship between realtionship length and overall love. Points are jittered to make overlapping responses easier to see; the recorded scores are unchanged. The line summarizes the linear trend.
+
+```{r}
+#| label: fig-commitment
+#| fig-cap: "Relationship between relationship length and overall love."
+#| fig-width: 8
+#| fig-height: 5
+
+ggplot(h2Data, aes(x = Relationship_length,
+                   y = all_love_score)) +
+  geom_jitter(width = .12, height = .04,
+              alpha = .04, size = .6) +
+  geom_smooth(method = "lm") +
+  labs(x = "Relationship Length",
+       y = "Overall Love (1–5)") +
+  theme_minimal()
+```
+
+### Observed trend
+
+```{r}
+#| label: correlation
+r <- cor(h2Data$Relationship_length, h2Data$all_love_score, use = "complete.obs")
+round(r, 2)
+```
+
+The correlation was `r round(r, 2)`, indicating a weak negative association.
