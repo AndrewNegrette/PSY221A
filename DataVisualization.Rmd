@@ -23,7 +23,6 @@ getwd(
 # The current paths refer to your personal Downloads folder. Replace both reads with:
 # h1Data <- read.csv("Data/processed_data/h1.csv")
 # h2Data <- read.csv("Data/processed_data/h2.csv")
-# Regenerate the H2 CSV after updating the love-scoring rule, then rerun the plot.
 ###  End of comment ###
 
 h1Data<- read.csv("/Users/anegrette/Downloads/PSY221A_Negrette/Data/processed_data/h1.csv")
