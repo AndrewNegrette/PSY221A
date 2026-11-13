@@ -19,14 +19,10 @@ library(ggrain)
 
 getwd(
 )
-###JK: Use project-relative paths for the two processed files. ###
-# The current paths refer to your personal Downloads folder. Replace both reads with:
-# h1Data <- read.csv("Data/processed_data/h1.csv")
-# h2Data <- read.csv("Data/processed_data/h2.csv")
-###  End of comment ###
 
-h1Data<- read.csv("/Users/anegrette/Downloads/PSY221A_Negrette/Data/processed_data/h1.csv")
-h2Data<- read.csv("/Users/anegrette/Downloads/PSY221A_Negrette/Data/processed_data/h2.csv")
+
+h1Data<- read.csv("Data/processed_data/h1.csv")
+h2Data<- read.csv("Data/processed_data/h2.csv")
 #reorganize categorical variable
 h1Data$Sex <- factor(h1Data$Sex,
                            levels=c("Men","Women","Prefer not to say"))
