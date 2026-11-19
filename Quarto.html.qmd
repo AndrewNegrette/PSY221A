@@ -12,14 +12,6 @@ editor_options:
   chunk_output_type: console
 ---
 
-###JK: The report renders and the published HTML opens; update a few report descriptions. ###
-# Describe Love_how_much_1 as a rating from 0 (Very little) to 100 (Very much). Replace the statement about allocating a 100-point budget.
-# Change the H2 heading to relationship duration and overall romantic love, and describe the H1 groups as gender rather than sex at birth.
-# For the final inline correlation, use `{r} round(r, 2)` including the braces around r.
-# Your published report opens at https://andrewnegrette.github.io/PSY221A/Quarto.html.html. Naming the published file docs/index.html would also make the shorter project URL open it.
-###  End of comment ###
-
-
 ```{r}
 #| label: load-data
 #| include: false
