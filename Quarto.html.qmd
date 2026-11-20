@@ -12,6 +12,9 @@ editor_options:
   chunk_output_type: console
 ---
 
+
+
+
 ```{r}
 #| label: load-data
 #| include: false
@@ -32,7 +35,7 @@ Women will score higher on intensity of love compared to men.
 ### Variables and descriptive statistics
 
 - **Gender (`Sex`):** A categorical variable with three groups: Men, Women, and Prefer not to say
-- **Intesnity of Love (`Love_how_much_1`):** Points allocated to intesnity of love from a total budget of 100 points. Higher values indicate greater love intensity.
+- **Intensity of love (`Love_how_much_1`):** A single rating from 0 (Very little) to 100 (Very much). Higher values indicate greater love intensity.
 
 ```{r}
 #| label: h1-descriptives
@@ -45,7 +48,7 @@ by(h1Data$Love_how_much_1, h1Data$Sex, summary)
 
 ### Graph
 
-@fig-attractiveness shows the distribution of points by sex at birth. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
+@fig-attractiveness shows the distribution of love intensity scores by gender. The half-violin shows the shape of the distribution, the box summarizes the median and quartiles, and the dots represent individual responses.
 
 ```{r}
 #| label: fig-attractiveness
@@ -62,7 +65,7 @@ ggplot(h1Data, aes(x = Sex, y = Love_how_much_1,
 ```
 
 
-## H2. Confidence in finding a new partner and commitment
+## H2. Relationship duration and overall romantic love
 
 Overall romantic love will positively correlate with relationship duration.
 
@@ -106,5 +109,7 @@ ggplot(h2Data, aes(x = Relationship_length,
 r <- cor(h2Data$Relationship_length, h2Data$all_love_score, use = "complete.obs")
 round(r, 2)
 ```
+
+###JK: Replace `r round(r, 2)` with `{r} round(r, 2)` in the sentence below. ###
 
 The correlation was `r round(r, 2)`, indicating a weak negative association.
